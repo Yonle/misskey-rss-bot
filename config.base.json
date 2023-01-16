@@ -1,0 +1,8 @@
+{
+  "rss_url": "https://example.com/feed.rss",
+  "instance": "misskey.example.com",
+  "access_token": "ACCESS-TOKEN-HERE",
+
+  "visibility": "public",
+  "checkinterval": 300000
+}
