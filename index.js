@@ -3,18 +3,28 @@ const poster = require("./poster.js");
 const config = require("./config");
 const parser = new Parser();
 
-let lastUpdated = null;
+let lastPosts = [];
 
 async function fetch() {
-  let rss = await parser.parseURL(config.rss_url);
-  if (rss.lastBuildDate == lastUpdated) return;
-  lastUpdated = rss.lastBuildDate;
+  console.log("-- Take your time, Fetching RSS feeds....");
 
-  // Send the first post
-  let post = rss.items[0];
-  poster(post.title + "\n" + post.link);
+  let rss = await parser.parseURL(config.rss_url);
+  console.log(`-  Received ${rss.items.length} feeds.`);
+
+  let posts = rss.items.filter(post => !lastPosts.includes(post.url));
+
+  console.log(`-  There are ${posts.length} new feeds.`);
+
+  posts.reverse().forEach(post => {
+    console.log("   Posting", post.link);
+    poster(post.title + "\n" + post.link);
+  });
+
+  lastPosts = rss.items.map(post => post.url);
+
+  console.log("-  Done. Waiting for the next call....");
 }
 
-setInterval(fetch, (config.interval || 5 * 60 * 1000));
+setInterval(fetch, (config.checkinterval || 5 * 60 * 1000));
 
 fetch();
