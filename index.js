@@ -8,19 +8,27 @@ let lastPosts = [];
 async function fetch() {
   console.log("-- Take your time, Fetching RSS feeds....");
 
-  let rss = await parser.parseURL(config.rss_url);
-  console.log(`-  Received ${rss.items.length} feeds.`);
+  try {
+    let rss = await parser.parseURL(config.rss_url);
+    console.log(`-  Received ${rss.items.length} feeds.`);
 
-  let posts = rss.items.filter(post => !lastPosts.includes(post.url));
+    let posts = rss.items.filter(post => !lastPosts.includes(post.url));
 
-  console.log(`-  There are ${posts.length} new feeds.`);
+    console.log(`-  There are ${posts.length} new feeds.`);
 
-  posts.reverse().forEach(post => {
-    console.log("   Posting", post.link);
-    poster(post.title + "\n" + post.link);
-  });
+    posts.reverse().forEach(post => {
+      console.log("   Posting", post.link);
+      poster(post.title + "\n" + post.link);
+    });
 
-  lastPosts = rss.items.map(post => post.url);
+    lastPosts = rss.items.map(post => post.url);
+  } catch (error) {
+    console.error("-  Failed to fetch", config.rss_url);
+    console.error(error);
+
+    console.log("-  Trying again in 5 seconds....");
+    return setTimeout(fetch, 5000);
+  }
 
   console.log("-  Done. Waiting for the next call....");
 }

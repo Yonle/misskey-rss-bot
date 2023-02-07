@@ -11,5 +11,5 @@ module.exports = (t) => {
     visibility: config.visibility || "public",
     text: t,
     i: config.access_token
-  }));
+  })).on('error', console.error);
 }
