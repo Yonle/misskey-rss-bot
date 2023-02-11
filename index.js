@@ -12,7 +12,7 @@ async function fetch() {
     let rss = await parser.parseURL(config.rss_url);
     console.log(`-  Received ${rss.items.length} feeds.`);
 
-    let posts = rss.items.filter(post => !lastPosts.includes(post.url));
+    let posts = rss.items.filter(post => !lastPosts.includes(post.link));
 
     console.log(`-  There are ${posts.length} new feeds.`);
 
@@ -21,7 +21,7 @@ async function fetch() {
       poster(post.title + "\n" + post.link);
     });
 
-    lastPosts = rss.items.map(post => post.url);
+    lastPosts = rss.items.map(post => post.link);
   } catch (error) {
     console.error("-  Failed to fetch", config.rss_url);
     console.error(error);
@@ -30,7 +30,7 @@ async function fetch() {
     return setTimeout(fetch, 5000);
   }
 
-  console.log("-  Done. Waiting for the next call....");
+  console.log(`-  Done. Waiting for the next call in ${(config.checkinterval || 5 * 60 * 1000) / 1000}s....`);
 }
 
 setInterval(fetch, (config.checkinterval || 5 * 60 * 1000));
